@@ -1,18 +1,17 @@
 #include <iostream>
 #include<memory>
 using namespace std;
-
 template<class T>
-class MyUinque {
+class MyShared {
     T* p = nullptr;
     int* count = nullptr;
 public:
-    MyUinque(T* p) {
+    MyShared(T* p) {
         this->p = p;
         this->count = new int(1);
         cout << "Construct" << endl;
     }
-    ~MyUinque() {
+    ~MyShared() {
         if (--(*count) == 0) {
             delete p;
             delete count;
@@ -28,10 +27,10 @@ public:
     T* operator->() {
         return p;
     }
-    MyUinque(const MyUinque& other) : p(other.p), count(other.count) {
+    MyShared(const MyShared& other) : p(other.p), count(other.count) {
         ++(*count);
     }
-    MyUinque& operator=(const MyUinque& other) {
+    MyShared& operator=(const MyShared& other) {
         if (this != &other) {
             if (--(*count) == 0) {
                 delete p;
@@ -43,11 +42,11 @@ public:
         }
         return *this;
     }
-    MyUinque(MyUinque&& other) noexcept : p(other.p), count(other.count) {
+    MyShared(MyShared&& other) noexcept : p(other.p), count(other.count) {
         other.p = nullptr;
         other.count = nullptr;
     }
-    MyUinque& operator=(MyUinque&& other) noexcept {
+    MyShared& operator=(MyShared&& other) noexcept {
         if (this != &other) {
             if (--(*count) == 0) {
                 delete p;
@@ -62,9 +61,10 @@ public:
     }
 };
 template<class T, class... Args>
-MyUinque<T> Make_MyUinque(Args&&... args) {
-    return MyUinque<T>(new T(forward<Args>(args)...));
+MyShared<T> Make_MyShared(Args&&... args) {
+    return MyShared<T>(new T(forward<Args>(args)...));
 }
+
 class MyPoint {
     int x, y;
 public:
@@ -73,12 +73,12 @@ public:
         cout << "Point(" << x << "," << y << ")" << endl;
     }
 };
-
 int main() {
-    auto point1 = Make_MyUinque<MyPoint>(1, 2);
-    auto point2 = point1;
-    point1->print();
-    point2->print();
-
+    auto sharedp1 = Make_MyShared<MyPoint>(10, 20);
+    auto sharedp2 = sharedp1;
+    auto sharedp3 = sharedp1;
+    sharedp1->print();
+    sharedp2->print();
+    sharedp3->print();
     return 0;
 }
