@@ -50,7 +50,7 @@ public:
 	}
 };
 int main() {
-	auto point = Make_MyUnique<MyPoint>(1, 2);
+	auto point = Make_MyUnique<MyPoint>(11, 12);
 	point->print();
 	return 0;
 }
